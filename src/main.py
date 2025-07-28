@@ -1,3 +1,4 @@
+# main.py
 import time
 import uuid
 import random
@@ -71,11 +72,38 @@ class ChatCompletionRequest(BaseModel):
 
 # --- Generator Setup ---
 generator = FastDummyGenerator(
-    model_name="gpt-3.5-turbo",
-    max_rpm=60,           # Allow up to 60 requests per minute
-    tokens_per_sec=100     # Limit 10 tokens per second per session
+    model_name="gpt-4",
+    max_rpm=3000,           # Allow up to 60 requests per minute
+    tokens_per_sec=60     # Limit 10 tokens per second per session
 )
 
+@app.get("/v1/models")
+async def list_models(api_key: str = Depends(verify_api_key)):
+    return {
+        "data": [
+            {
+                "id": generator.model_name,
+                "object": "model",
+                "created": int(time.time()),
+                "owned_by": "openai",
+                "permission": [
+                    {
+                        "id": str(uuid.uuid4()),
+                        "object": "model_permission",
+                        "created": int(time.time()),
+                        "allow_create_engine": False,
+                        "allow_sampling": True,
+                        "allow_logprobs": False,
+                        "allow_search_indices": False,
+                        "allow_view": True,
+                        "organization": "*",
+                        "group": None,
+                        "is_blocking": False,
+                    }
+                ],
+            }
+        ]
+    }
 
 # --- Completion Endpoint ---
 @app.post("/v1/chat/completions")
