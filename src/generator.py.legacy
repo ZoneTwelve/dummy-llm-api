@@ -1,3 +1,4 @@
+# generate.py
 import time
 import random
 import json
@@ -20,7 +21,7 @@ class FastDummyGenerator:
     def _load_dataset(self):
         dataset = load_dataset("allenai/tulu-3-sft-personas-instruction-following", split="train")
         messages = list(dataset["messages"])  # list of conversations
-        self.assistant_responses = deque()  # Initialize as deque instead of list
+        self.assistant_responses = []
 
         for convo in messages:
             for msg in convo:
